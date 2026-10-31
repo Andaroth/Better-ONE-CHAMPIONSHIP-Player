@@ -34,6 +34,11 @@
         else video.pause()
     }
 
+    function changeVideoTimeByDelta(delta) { video.currentTime += delta }
+    function changeVideoVolume(value) { video.volume = value }
+
+    function toggleVideoMute() { video.muted = !video.muted }
+
     function initBetterVideo() {
         // Opacity of language selector:
         improveLanguagePicker()
@@ -46,9 +51,15 @@
             document.body.style.setProperty("cursor", "auto", "important");
         });
 
-        // play/pause on space key
-        video.addEventListener("keyup", (event) => {
-            if (event.code === "Space") toggleVideoPlay()
+        window.addEventListener("keyup", (event) => {
+            (({
+                [event.code === "Space"]: toggleVideoPlay,
+                [event.key === "ArrowUp"]: (() => changeVideoVolume(Math.min(Math.max((video.volume || 0) + 0.1, 0), 1))),
+                [event.key === "ArrowDown"]: (() => changeVideoVolume(Math.min(Math.max((video.volume || 0) - 0.1, 0), 1))),
+                // [event.key === "ArrowLeft"]: (() => changeVideoTimeByDelta(-10)), // breaks client player
+                // [event.key === "ArrowRight"]: (() => changeVideoTimeByDelta(10)), // breaks client player
+                [event.key === "m"]: toggleVideoMute
+            })[!!true] || (() => {}))()
         })
         clearInterval(findVideoTagInterval)
     }
