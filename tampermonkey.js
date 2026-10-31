@@ -10,13 +10,14 @@
 // ==/UserScript==
 
 (function() {
+    "use strict"
     let video, mouseTimeout, findVideoTagInterval;
 
     function improveLanguagePicker() {
-        const style = document.createElement('style')
-        style.type = "text/css"
-        const css = `div.nav-pip-selector { opacity: 0.1; } div.nav-pip-selector:hover { opacity: 1; }`
-        document.head.appendChild(style)
+        const style = document.createElement('style');
+        style.type = "text/css";
+        const css = `div.nav-pip-selector { opacity: 0.1; } div.nav-pip-selector:hover { opacity: 1; }`;
+        document.head.appendChild(style);
         if (style.styleSheet) style.styleSheet.cssText = css;
         else style.appendChild(document.createTextNode(css));
     }
@@ -25,7 +26,7 @@
         clearTimeout(mouseTimeout);
         document.body.style.setProperty("cursor", "auto", "important");
         mouseTimeout = setTimeout(() => {
-            if (!video.paused) document.body.style.setProperty("cursor", "none", "important")
+            if (!video.paused) document.body.style.setProperty("cursor", "none", "important");
         }, 1000);
     }
 
@@ -34,30 +35,30 @@
         else video.pause()
     }
 
-    function changeVideoTimeByDelta(delta) { video.currentTime += delta }
-    function changeVideoVolume(value) { video.volume = value }
+    function changeVideoTime(delta) { video.currentTime += delta }
+
+    function changeVideoVolume(delta) { video.volume = Math.min(Math.max((video.volume || 0) + delta, 0), 1) }
 
     function toggleVideoMute() { video.muted = !video.muted }
 
     function initBetterVideo() {
-        // Opacity of language selector:
-        improveLanguagePicker()
+        improveLanguagePicker(); // Opacity of language selector
+        video.addEventListener("click", toggleVideoPlay); // play/pause on video click
         // Hide mouse on video play:
-        video.addEventListener("click", toggleVideoPlay)
         video.addEventListener("mouseenter", toggleCursor);
         video.addEventListener("mousemove", toggleCursor);
         video.addEventListener("mouseleave", () => {
             clearTimeout(mouseTimeout);
             document.body.style.setProperty("cursor", "auto", "important");
         });
-
+        // player generic events:
         window.addEventListener("keyup", (event) => {
             (({
                 [event.code === "Space"]: toggleVideoPlay,
-                [event.key === "ArrowUp"]: (() => changeVideoVolume(Math.min(Math.max((video.volume || 0) + 0.1, 0), 1))),
-                [event.key === "ArrowDown"]: (() => changeVideoVolume(Math.min(Math.max((video.volume || 0) - 0.1, 0), 1))),
-                // [event.key === "ArrowLeft"]: (() => changeVideoTimeByDelta(-10)), // breaks client player
-                // [event.key === "ArrowRight"]: (() => changeVideoTimeByDelta(10)), // breaks client player
+                [event.key === "ArrowUp"]: (() => changeVideoVolume(0.1)),
+                [event.key === "ArrowDown"]: (() => changeVideoVolume(-0.1)),
+                // [event.key === "ArrowLeft"]: (() => changeVideoTime(-10)), // Breaks stream (Issue #1)
+                // [event.key === "ArrowRight"]: (() => changeVideoTime(10)), // Issue #1
                 [event.key === "m"]: toggleVideoMute
             })[!!true] || (() => {}))()
         })
