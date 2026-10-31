@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better ONE CHAMPIONSHIP Player
 // @namespace    http://live.onefc.com/
-// @version      2026-10-31
+// @version      1.0.0 (2026-10-31)
 // @description  Slightly hides language selector one ONE CHAMPIONSHIP video player & Improvements
 // @author       Andaroth
 // @match        https://live.onefc.com/video/*
