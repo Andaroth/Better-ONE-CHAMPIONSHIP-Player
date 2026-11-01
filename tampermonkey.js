@@ -4,7 +4,7 @@
 // @version      1.0.0-2026-10-31
 // @description  Slightly hides language selector one ONE CHAMPIONSHIP video player & Improvements
 // @author       Andaroth
-// @match        https://live.onefc.com/video/*
+// @match        https://live.onefc.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=onefc.com
 // @grant        none
 // ==/UserScript==
