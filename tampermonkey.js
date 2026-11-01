@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Better ONE CHAMPIONSHIP Player
 // @namespace    http://live.onefc.com/
-// @version      1.0.0-2026-10-31
+// @version      1.0.1-2026-11-01
 // @description  Slightly hides language selector one ONE CHAMPIONSHIP video player & Improvements
 // @author       Andaroth
 // @match        https://live.onefc.com/*
@@ -11,7 +11,8 @@
 
 (function() {
     "use strict"
-    let video, mouseTimeout, findVideoTagInterval;
+    let video, mouseTimeout, findVideoTagInterval, enabled;
+    const isPlayerOnPage = () => !!document.querySelector("video#bitmovinplayer-video-null");
 
     function improveLanguagePicker() {
         const style = document.createElement('style');
@@ -26,22 +27,25 @@
         clearTimeout(mouseTimeout);
         document.body.style.setProperty("cursor", "auto", "important");
         mouseTimeout = setTimeout(() => {
-            if (!video.paused) document.body.style.setProperty("cursor", "none", "important");
+            if (!video || !video.paused) document.body.style.setProperty("cursor", "none", "important");
         }, 1000);
     }
 
     function toggleVideoPlay() {
+        if (!video) return;
         if (video.paused) video.play()
-        else video.pause()
+        else video.pause();
     }
 
-    function changeVideoTime(delta) { video.currentTime += delta }
+    function changeVideoTime(delta) { if (video) video.currentTime += delta }
 
-    function changeVideoVolume(delta) { video.volume = Math.min(Math.max((video.volume || 0) + delta, 0), 1) }
+    function changeVideoVolume(delta) { if (video) video.volume = Math.min(Math.max((video.volume || 0) + delta, 0), 1) }
 
-    function toggleVideoMute() { video.muted = !video.muted }
+    function toggleVideoMute() { if (video) video.muted = !video.muted }
 
     function initBetterVideo() {
+        if (enabled) return;
+        video = document.querySelector("video#bitmovinplayer-video-null");
         improveLanguagePicker(); // Opacity of language selector
         video.addEventListener("click", toggleVideoPlay); // play/pause on video click
         // Hide mouse on video play:
@@ -51,22 +55,25 @@
             clearTimeout(mouseTimeout);
             document.body.style.setProperty("cursor", "auto", "important");
         });
-        // player generic events:
-        window.addEventListener("keyup", (event) => {
-            (({
-                [event.code === "Space"]: toggleVideoPlay,
-                [event.key === "ArrowUp"]: (() => changeVideoVolume(0.1)),
-                [event.key === "ArrowDown"]: (() => changeVideoVolume(-0.1)),
-                // [event.key === "ArrowLeft"]: (() => changeVideoTime(-10)), // Breaks stream (Issue #1)
-                // [event.key === "ArrowRight"]: (() => changeVideoTime(10)), // Issue #1
-                [event.key === "m"]: toggleVideoMute
-            })[!!true] || (() => {}))()
-        })
-        clearInterval(findVideoTagInterval)
+        enabled = true;
     }
 
-    findVideoTagInterval = setInterval(function() {
-        video = document.querySelector("video#bitmovinplayer-video-null");
-        if (!!video) initBetterVideo()
-    }, 1000)
+    function searchPlayer() {
+        if (isPlayerOnPage() && !enabled) initBetterVideo()
+        else if (!isPlayerOnPage()) enabled = false;
+    }
+
+    setInterval(searchPlayer, 1000)
+
+    // player generic events:
+    window.addEventListener("keyup", (event) => {
+        (({
+            [event.code === "Space"]: toggleVideoPlay,
+            [event.key === "ArrowUp"]: (() => changeVideoVolume(0.1)),
+            [event.key === "ArrowDown"]: (() => changeVideoVolume(-0.1)),
+            // [event.key === "ArrowLeft"]: (() => changeVideoTime(-10)), // Breaks stream (Issue #1)
+            // [event.key === "ArrowRight"]: (() => changeVideoTime(10)), // Issue #1
+            [event.key === "m"]: toggleVideoMute
+        })[!!true] || (() => {}))()
+    })
 })();
