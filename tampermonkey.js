@@ -2,7 +2,7 @@
 // @name         Better ONE CHAMPIONSHIP Player
 // @namespace    http://live.onefc.com/
 // @version      1.0.1-2026-11-01
-// @description  Slightly hides language selector one ONE CHAMPIONSHIP video player & Improvements
+// @description  Slightly hides language selector and brings mouse & keyboard improvements to web player
 // @author       Andaroth
 // @match        https://live.onefc.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=onefc.com
@@ -18,7 +18,7 @@
     function improveLanguagePicker() {
         if (!!document.head.querySelector("andaroth-better-player")) return;
         const style = document.createElement('style');
-        style.id = "andaroth-better-player"
+        style.id = "andaroth-better-player";
         style.type = "text/css";
         const css = `div.nav-pip-selector { opacity: 0.1; } div.nav-pip-selector:hover { opacity: 1; }`;
         document.head.appendChild(style);
