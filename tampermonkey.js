@@ -11,7 +11,7 @@
 
 (function() {
     "use strict"
-    let video, mouseTimeout, findVideoTagInterval, enabled;
+    let video, mouseTimeout, enabled;
     const isPlayerOnPage = () => !!document.querySelector("video#bitmovinplayer-video-null");
 
     function improveLanguagePicker() {
