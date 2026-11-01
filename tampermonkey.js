@@ -27,7 +27,7 @@
         clearTimeout(mouseTimeout);
         document.body.style.setProperty("cursor", "auto", "important");
         mouseTimeout = setTimeout(() => {
-            if (!video || !video.paused) document.body.style.setProperty("cursor", "none", "important");
+            if (!!video && !video.paused) document.body.style.setProperty("cursor", "none", "important");
         }, 1000);
     }
 
