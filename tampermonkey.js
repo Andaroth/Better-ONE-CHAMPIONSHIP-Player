@@ -12,7 +12,8 @@
 (function() {
     "use strict"
     let video, mouseTimeout, enabled;
-    const isPlayerOnPage = () => !!document.querySelector("video#bitmovinplayer-video-null");
+    const findVideo = () => document.querySelector("video#bitmovinplayer-video-null");
+    const isPlayerOnPage = () => !!findVideo();
 
     function improveLanguagePicker() {
         const style = document.createElement('style');
@@ -45,7 +46,8 @@
 
     function initBetterVideo() {
         if (enabled) return;
-        video = document.querySelector("video#bitmovinplayer-video-null");
+        video = findVideo();
+        if (!video) return;
         improveLanguagePicker(); // Opacity of language selector
         video.addEventListener("click", toggleVideoPlay); // play/pause on video click
         // Hide mouse on video play:
@@ -69,11 +71,15 @@
     window.addEventListener("keyup", (event) => {
         (({
             [event.code === "Space"]: toggleVideoPlay,
+            [event.key === "m"]: toggleVideoMute
+        })[!!true] || (() => {}))()
+    })
+    window.addEventListener("keydown", (event) => {
+        (({
             [event.key === "ArrowUp"]: (() => changeVideoVolume(0.1)),
             [event.key === "ArrowDown"]: (() => changeVideoVolume(-0.1)),
             // [event.key === "ArrowLeft"]: (() => changeVideoTime(-10)), // Breaks stream (Issue #1)
-            // [event.key === "ArrowRight"]: (() => changeVideoTime(10)), // Issue #1
-            [event.key === "m"]: toggleVideoMute
+            // [event.key === "ArrowRight"]: (() => changeVideoTime(10)) // Issue #1
         })[!!true] || (() => {}))()
     })
 })();
