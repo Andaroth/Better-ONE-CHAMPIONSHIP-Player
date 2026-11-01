@@ -16,7 +16,9 @@
     const isPlayerOnPage = () => !!findVideo();
 
     function improveLanguagePicker() {
+        if (!!document.head.querySelector("andaroth-better-player")) return;
         const style = document.createElement('style');
+        style.id = "andaroth-better-player"
         style.type = "text/css";
         const css = `div.nav-pip-selector { opacity: 0.1; } div.nav-pip-selector:hover { opacity: 1; }`;
         document.head.appendChild(style);
